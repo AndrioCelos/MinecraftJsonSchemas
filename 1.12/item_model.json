@@ -1,0 +1,86 @@
+{
+	"$schema": "http://json-schema.org/draft-06/schema",
+	"title": "Item model",
+	"description": "An item model for Minecraft 1.12.2. See https://minecraft.gamepedia.com/Model#Item_models for more information.",
+	"type": "object",
+	"allOf": [
+		{ "$ref": "model.json" },
+		{
+			"properties": {
+				"overrides": {
+					"type": "array",
+					"description": "Determines cases which a different model should be used based on item tags.",
+					"items": {
+						"type": "object",
+						"properties": {
+							"predicate": {
+								"type": "object",
+								"description": "Compares numeric values of various properties. The value must be greater than or equal to the specified threshold to match.",
+								"properties": {
+									"angle": {
+										"type": "number",
+										"description": "Used on compasses to determine the current angle clockwise from pointing straight backward, expressed in a decimal value of less than one.",
+										"minimum": 0,
+										"exclusiveMaximum": 1
+									},
+									"blocking": {
+										"description": "Used on shields to determine if currently blocking. If 1, the player is blocking.",
+										"enum": [ 0, 1 ]
+									},
+									"broken": {
+										"description": "Used on Elytra to determine if broken. If 1, the Elytra are broken.",
+										"enum": [ 0, 1 ]
+									},
+									"cast": {
+										"description": "Used on fishing rods to determine if the fishing rod has been cast. If 1, the fishing rod has been cast.",
+										"enum": [ 0, 1 ]
+									},
+									"cooldown": {
+										"type": "number",
+										"description": "Used on ender pearls and chorus fruit to determine the remaining cooldown, expressed in a decimal value between 0 and 1.",
+										"minimum": 0,
+										"maximum": 1
+									},
+									"damage": {
+										"type": "number",
+										"description": "Used on items with durability to determine the amount of damage, expressed in a decimal value between 0 and 1.",
+										"minimum": 0,
+										"maximum": 1
+									},
+									"damaged": {
+										"description": "Used on items with durability to determine if it is damaged. If 1, the item is damaged. Note that if an item has the unbreakable tag, this may be 0 while the item has a non-zero 'damage' tag.",
+										"enum": [ 0, 1 ]
+									},
+									"lefthanded": {
+										"description": "Determines the model used by left-handed players. It will affect the item they see in inventories, along with the item players see them holding or wearing."
+									},
+									"pull": {
+										"type": "number",
+										"description": "Determines the amount a bow has been pulled, expressed in a decimal value of less than one.",
+										"minimum": 0,
+										"maximum": 1
+									},
+									"pulling": {
+										"description": "Used on bows to determine if the bow is being pulled. If 1, the bow is currently being pulled.",
+										"enum": [ 0, 1 ]
+									},
+									"time": {
+										"type": "number",
+										"description": "Used on clocks to determine the current time, expressed in a decimal value of less than one. 0 represents midday.",
+										"minimum": 0,
+										"exclusiveMaximum": 1
+									}
+								}
+							},
+							"model": {
+								"type": "string",
+								"description": "The path to the model to use if the case is met, starting in 'assets/minecraft/models/'."
+							}
+						},
+						"required": [ "predicate", "model" ]
+					}
+				}
+			}
+		}
+	]
+}

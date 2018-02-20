@@ -1,0 +1,18 @@
+{
+	"$schema": "http://json-schema.org/draft-06/schema",
+	"title": "Block model",
+	"description": "A block model for Minecraft 1.12.2. See https://minecraft.gamepedia.com/Model#Block_models for more information.",
+	"type": "object",
+	"allOf": [
+		{ "$ref": "model.json" },
+		{
+			"properties": {
+				"ambientocclusion": {
+					"type": "boolean",
+					"description": "Whether to use ambient occlusion.",
+					"default": true
+				}
+			}
+		}
+	]
+}

@@ -1,0 +1,98 @@
+{
+	"$schema": "http://json-schema.org/draft-06/schema",
+	"title": "Block state file",
+	"description": "A block state file for Minecraft 1.12.2. See https://minecraft.gamepedia.com/Model#Block_states for more information.",
+	"type": "object",
+	"definitions": {
+		"model": {
+			"type": "object",
+			"description": "Contains the properties of a model.",
+			"properties": {
+				"model": {
+					"type": "string",
+					"description": "Specifies the path to the model file of the block, starting in 'assets/minecraft/models/block'."
+				},
+				"x": {
+					"description": "Rotation of the model on the x-axis.",
+					"enum": [ 0, 90, 180, 270 ],
+					"default": 0
+				},
+				"y": {
+					"description": "Rotation of the model on the y-axis.",
+					"enum": [ 0, 90, 180, 270 ],
+					"default": 0
+				},
+				"uvlock": {
+					"type": "boolean",
+					"description": "Locks the rotation of the texture of a block, if set to true. This way the texture will not rotate with the block when using the 'x' and 'y' tags above.",
+					"default": false
+				},
+				"weight": {
+					"type": "integer",
+					"description": "Sets the probability of the model for being used in the game, defaults to 1 (=100%). If more than one model is used for the same variant, the probability will be calculated by dividing the individual model’s weight by the sum of the weights of all models. (For example, if three models are used with weights 1, 1, and 2, then their combined weight would be 4 (1+1+2). The probability of each model being used would then be determined by dividing each weight by 4: 1/4, 1/4 and 2/4, or 25%, 25% and 50%, respectively.)",
+					"default": 1
+				}
+			}
+		},
+		"variant": {
+			"type": [ "object", "array" ],
+			"description": "Each variant can have one model or an array of models, and contains their properties. If set to an array, the model will randomly be chosen from the options given, with each option being specified in separate subsidiary objects.",
+			"anyOf": [
+				{ "$ref": "#definitions/model" },
+				{
+					"type": "array",
+					"minItems": 1,
+					"items": { "$ref": "#definitions/model" }
+				}
+			]
+		},
+		"case": {
+			"title": "Case",
+			"type": "object",
+			"description": "A list of block state properties that must match. It can be set to a list seperated by '|' to allow multiple values to match.",
+			"properties": {
+				"OR": false
+			}
+		}
+	},
+	"properties": {
+		"variants": {
+			"type": "object",
+			"description": "The block state variants of the block. A block with just one variant uses 'normal' as a name for its variant.",
+			"properties": {
+				"normal": { "$ref": "#definitions/variant" }
+			},
+			"additionalProperties": { "$ref": "#definitions/variant" }
+		},
+		"multipart": {
+			"type": "array",
+			"description": "Used instead of 'variants' to combine models based on block state attributes.",
+			"items": {
+				"type": "object",
+				"description": "Determines a case and which model should apply in that case.",
+				"properties": {
+					"when": {
+						"type": "object",
+						"description": "A case, or an 'OR' list of cases, that have to be met for the model to be applied. If unset, the model always applies.",
+						"anyOf": [
+							{
+								"properties": {
+									"OR": {
+										"type": "array",
+										"description": "Matches if any of the contained cases return true. Cannot be set along side other cases.",
+										"items": { "$ref": "#definitions/case" }
+									}
+								},
+								"additionalProperties": false,
+								"required": [ "OR" ]
+							},
+							{ "$ref": "#definitions/case" }
+						]
+					},
+					"apply": { "$ref": "#definitions/variant" }
+				},
+				"required": [ "apply" ]
+			}
+		}
+	}
+}

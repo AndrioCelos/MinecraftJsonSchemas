@@ -1,0 +1,279 @@
+{
+	"$schema": "http://json-schema.org/draft-06/schema",
+	"title": "Text component",
+	"description": "A text component for Minecraft 1.12.2. See https://minecraft.gamepedia.com/Commands#Raw_JSON_text for more information.",
+	"type": [ "string", "object" ],
+	"oneOf": [
+		{
+			"type": "string",
+			"$comment": "TODO: The 'oneOf' keyword causes Visual Studio Code to display 'Incorrect type. Expected \"string\".' for objects that contain none of the required properties. 'if' cannot be used because Visual Studio Code currently does not support it."
+		},
+		{
+			"type": "object",
+			"properties": {
+				"text": {
+					"type": "string",
+					"description": "A string representing raw text to display directly in chat. Note that selectors such as '@a' and '@p' are not translated into player names; use 'selector' instead."
+				}
+			},
+			"required": [ "text" ]
+		},
+		{
+			"type": "object",
+			"properties": {
+				"translate": {
+					"type": "string",
+					"description": "The translation identifier of text to be displayed using the player's selected language. This identifier is the same as the identifiers found in lang files from assets or resource packs."
+				},
+				"with": {
+					"type": "array",
+					"description": "A list of chat component arguments and/or string arguments to be used by 'translate'. The arguments are text corresponding to the arguments used by the translation string in the current language, in order (for example, the first list element corresponds to \"%1$s\" in a translation string).",
+					"items": { "$ref": "#" }
+				}
+			},
+			"required": [ "translate" ]
+		},
+		{
+			"type": "object",
+			"properties": {
+				"score": {
+					"type": "object",
+					"description": "A player's score in an objective. Displays nothing if the player is not tracked in the given objective.",
+					"properties": {
+						"name": {
+							"type": "string",
+							"description": "The name of the player whose score should be displayed. Selectors (such as @p) can be used, in addition to 'fake' player names created by the scoreboard system. In addition, if the name is '*', it will show the reader's own score (for example, /tellraw @a {\"score\":{\"name\":\"*\",\"objective\":\"obj\"}} will show every online player their own score in the 'obj' objective)."
+						},
+						"objective": {
+							"type": "string",
+							"description": "The internal name of the objective to display the player's score in."
+						},
+						"value": {
+							"type": "string",
+							"description": "If present, this value is used regardless of what the score would have been."
+						}
+					},
+					"required": [ "name", "objective" ]
+				}
+			},
+			"required": [ "score" ]
+		},
+		{
+			"type": "object",
+			"properties": {
+				"selector": {
+					"type": "string",
+					"description": "A string containing a selector (@p,@a,@r,@e or @s) and, optionally, selector arguments. Unlike text, the selector will be translated into the correct player/entity names. If more than one player/entity is detected by the selector, it will be displayed in a form such as 'Name1 and Name2' or 'Name1, Name2, Name3, and Name4'. Clicking a player's name inserted into a /tellraw command this way will suggest a command to whisper to that player. Shift-clicking a player's name will insert that name into chat. Shift-clicking a non-player entity's name will insert its UUID into chat."
+				}
+			},
+			"required": [ "selector" ]
+		},
+		{
+			"type": "object",
+			"properties": {
+				"keybind": {
+					"type": "string",
+					"description": "A string that can be used to display the key needed to preform a certain action. An example is key.inventory which will always display 'E' unless the player has set a different key for opening their inventory."
+				}
+			},
+			"required": [ "keybind" ]
+		}
+	],
+	"properties": {
+		"extra": {
+			"type": "array",
+			"description": "A list of additional objects, sharing the same format as the base object. Note that all properties of this object are inherited by children except for text, extra, translate, with, and score. This means that children will retain the same formatting and events as this object unless they explicitly override them.",
+			"items": { "$ref": "#" }
+		},
+		"color": {
+			"description": "The color to render this text in.",
+			"enum": [
+				"black",
+				"dark_blue",
+				"dark_green",
+				"dark_aqua",
+				"dark_red",
+				"dark_purple",
+				"gold",
+				"gray",
+				"dark_gray",
+				"blue",
+				"green",
+				"aqua",
+				"red",
+				"light_purple",
+				"yellow",
+				"white",
+				"reset"
+			]
+		},
+		"bold": {
+			"type": "boolean",
+			"description": "Whether to render text in bold."
+		},
+		"italic": {
+			"type": "boolean",
+			"description": "Whether to render text in italics."
+		},
+		"underline": {
+			"type": "boolean",
+			"description": "Whether to render text underlined."
+		},
+		"strikethrough": {
+			"type": "boolean",
+			"description": "Whether to render text with a strikethrough."
+		},
+		"obfuscated": {
+			"type": "boolean",
+			"description": "Whether to render text obfuscated."
+		},
+		"insertion": {
+			"type": "string",
+			"description": "When the text is shift-clicked by a player, this string will be inserted in their chat input. It will not overwrite any existing text the player was writing."
+		},
+		"clickEvent": {
+			"type": "object",
+			"description": "Allows for events to occur when the player clicks on text.",
+			"properties": {
+				"action": {
+					"description": "The action to perform when clicked.",
+					"enum": [
+						"open_url",
+						"open_file",
+						"run_command",
+						"change_page",
+						"suggest_command"
+					]
+				},
+				"value": { "type": "string" }
+			},
+			"anyOf": [
+				{
+					"properties": {
+						"action": {
+							"const": "open_url",
+							"title": "Open URL",
+							"description": "Opens the value as a URL in the player's default web browser."
+						},
+						"value": { "description": "The URL to open." }
+					}
+				},
+				{
+					"properties": {
+						"action": {
+							"const": "open_file",
+							"title": "Open file",
+							"description": "Opens the specified file on the user's computer."
+						},
+						"value": { "description": "The file path to open." }
+					}
+				},
+				{
+					"properties": {
+						"action": {
+							"const": "run_command",
+							"title": "Run command",
+							"description": "Has the value entered in chat as though the player typed it themselves. This can be used to run commands, but the command will fail if the player does not have the required permissions to use it."
+						},
+						"value": { "description": "The text to enter. Commands must be prefixed with the usual '/' slash." }
+					}
+				},
+				{
+					"properties": {
+						"action": {
+							"const": "change_page",
+							"title": "Change page",
+							"description": "Can only be used in written books. Changes to the specified page if that page exists."
+						},
+						"value": {
+							"description": "The page number to change to. 1 represents the first page.",
+							"pattern": "^\\+?\\d+$"
+						}
+					}
+				},
+				{
+					"properties": {
+						"action": {
+							"const": "suggest_command",
+							"title": "Suggest command",
+							"description": "Similar to 'run_command', but it cannot be used in a written book. The text only appears in the player's chat input and it is not automatically entered. Unlike 'insertion', this will replace the existing contents of the chat input."
+						},
+						"value": { "description": "The text to suggest." }
+					}
+				}
+			]
+		},
+		"hoverEvent": {
+			"type": "object",
+			"description": "Allows for a tooltip to be displayed when the player hovers their mouse over text.",
+			"properties": {
+				"action": {
+					"description": "The type of tooltip to show.",
+					"enum": [
+						"show_text",
+						"show_item",
+						"show_entity"
+					]
+				}
+			},
+			"anyOf": [
+				{
+					"properties": {
+						"action": {
+							"const": "show_text",
+							"title": "Show text",
+							"description": "Shows a text component."
+						},
+						"value": { "$ref": "#" }
+					}
+				},
+				{
+					"properties": {
+						"action": {
+							"const": "show_item",
+							"title": "Show item",
+							"description": "Shows the tooltip of an item."
+						},
+						"value": {
+							"description": "A string formatted like item NBT data. Contains the 'id' tag, and optionally the 'Damage' tag and 'tag' tag (which is the same compound used as 'dataTag' in the /give command).",
+							"pattern": "id\"?\\s*:"
+						}
+					}
+				},
+				{
+					"properties": {
+						"action": {
+							"const": "show_entity",
+							"title": "Show entity",
+							"description": "Shows an entity's name, possibly its type, and its UUID."
+						},
+						"value": { "description": "A string formatted like a compound with the string values 'type' (such as 'Zombie'), 'name', and 'id' (should be an entity UUID, but can actually be any string)." }
+					}
+				},
+				{
+					"properties": {
+						"action": {
+							"const": "change_page",
+							"title": "Change page",
+							"description": "Can only be used in written books. Changes to the specified page if that page exists."
+						},
+						"value": {
+							"description": "The page number to change to. 1 represents the first page.",
+							"pattern": "^\\+?\\d+$"
+						}
+					}
+				},
+				{
+					"properties": {
+						"action": {
+							"const": "suggest_command",
+							"title": "Suggest command",
+							"description": "Similar to 'run_command', but it cannot be used in a written book. The text only appears in the player's chat input and it is not automatically entered. Unlike 'insertion', this will replace the existing contents of the chat input."
+						},
+						"value": { "description": "The text to suggest." }
+					}
+				}
+			]
+		}
+	}
+}

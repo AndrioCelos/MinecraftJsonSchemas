@@ -1,0 +1,463 @@
+{
+	"$schema": "http://json-schema.org/draft-06/schema",
+	"title": "Loot table",
+	"description": "A loot table for Minecraft 1.12.2. See https://minecraft.gamepedia.com/Loot_table for more information.",
+	"type": "object",
+	"definitions": {
+		"integerOrRange": {
+			"type": [ "integer", "object" ],
+			"properties": {
+				"min": { "type": "integer" },
+				"max": { "type": "integer" }
+			},
+			"required": [ "min", "max" ]
+		},
+		"nonNegativeIntegerOrRange": {
+			"allOf": [
+				{ "ref": "#/definitions/integerOrRange" },
+				{
+					"minimum": 0,
+					"additionalProperties": { "minimum": 0 }
+				}
+			]
+		},
+		"numberOrRange": {
+			"type": [ "number", "object" ],
+			"properties": {
+				"min": { "type": "number" },
+				"max": { "type": "number" }
+			},
+			"required": [ "min", "max" ]
+		},
+		"entity": {
+			"description": "The entity to check for the condition. Set to 'this' to use the entity that died, 'killer' for the killer, or 'killer_player' for a killer that is a player.",
+			"enum": [
+				"this",
+				"killer",
+				"killer_player"
+			]
+		},
+		"conditions": {
+			"type": "array",
+			"description": "A list of conditions for this to be used. If multiple conditions are specified, all must pass.",
+			"default": [ ],
+			"items": {
+				"type": "object",
+				"properties": {
+					"condition": {
+						"enum": [
+							"entity_properties",
+							"entity_scores",
+							"killed_by_player",
+							"random_chance",
+							"random_chance_with_looting"
+						]
+					}
+				},
+				"required": [ "condition" ],
+				"anyOf": [
+					{
+						"properties": {
+							"condition": {
+								"const": "entity_properties",
+								"title": "Entity properties",
+								"description": "Tests properties of an entity."
+							},
+							"entity": { "$ref": "#/definitions/entity" },
+							"properties": {
+								"type": "object",
+								"description": "Properties to be checked.",
+								"properties": {
+									"on_fire": {
+										"description": "Tests whether the entity is or is not on fire.",
+										"type": "boolean"
+									}
+								}
+							}
+						},
+						"required": [ "entity", "properties" ]
+					},
+					{
+						"properties": {
+							"condition": {
+								"const": "entity_scores",
+								"title": "Entity scores",
+								"description": "Tests the scoreboard scores of an entity."
+							},
+							"entity": { "$ref": "#/definitions/entity" },
+							"scores": {
+								"type": "object",
+								"description": "Scores to check. Keys represent objective names. All specified scores must match for the condition to pass.",
+								"minProperties": 1,
+								"additionalProperties": {
+									"$ref": "#/definitions/integerOrRange"
+								}
+							}
+						},
+						"required": [ "entity", "scores" ]
+					},
+					{
+						"properties": {
+							"condition": {
+								"const": "killed_by_player",
+								"title": "Killed by player",
+								"description": "Tests whether a 'killer_player' entity is available."
+							},
+							"inverse": {
+								"description": "If true, the condition passes if 'killer_player' is not available.",
+								"type": "boolean",
+								"default": false
+							}
+						}
+					},
+					{
+						"properties": {
+							"condition": {
+								"const": "random_chance",
+								"title": "Random chance",
+								"description": "Tests whether a random number 0.0–1.0 is less than the specified value."
+							},
+							"chance": {
+								"type": "number",
+								"description": "Success rate as a number 0.0–1.0.",
+								"exclusiveMinimum": 0,
+								"exclusiveMaximum": 1
+							}
+						},
+						"required": [ "chance" ]
+					},
+					{
+						"properties": {
+							"condition": {
+								"const": "random_chance_with_looting",
+								"title": "Random chance with Looting",
+								"description": "Test if a random number 0.0–1.0 is less than a specified value, affected by the level of Looting on the 'killer' entity."
+							},
+							"chance": {
+								"type": "number",
+								"description": "Base success rate."
+							},
+							"looting_multiplier": {
+								"type": "number",
+								"description": "Looting adjustment to the base success rate. Formula is `chance + (looting_level * looting_multiplier)`."
+							}
+						},
+						"required": [ "chance", "looting_multiplier" ]
+					}
+				]
+			}
+		},
+		"slot": {
+			"enum": [
+				"mainhand",
+				"offhand",
+				"feet",
+				"legs",
+				"chest",
+				"head"
+			]
+		}
+	},
+	"properties": {
+		"pools": {
+			"type": "array",
+			"description": "A list of all pools for this table. Each pool used will generate items from its list of items based on the number of rolls. Pools are applied in order.",
+			"items": {
+				"type": "object",
+				"properties": {
+					"conditions": {
+						"$ref": "#/definitions/conditions"
+					},
+					"rolls": {
+						"allOf": [
+							{ "$ref": "#/definitions/integerOrRange" },
+							{ "description": "The number of rolls on the pool. Specify a range for a random number of rolls." }
+						]
+					},
+					"bonus_rolls": {
+						"allOf": [
+							{ "$ref": "#/definitions/numberOrRange" },
+							{ "description": "The number of bonus rolls on the pool per point of luck. Specify a range for a random number of rolls. Rounded down after multiplying." }
+						]
+					},
+					"entries": {
+						"type": "array",
+						"description": "A list of all things that can be produced by this pool. One entry is chosen per roll as a weighted random selection from all entries without failing conditions.",
+						"items": {
+							"properties": {
+								"conditions": {
+									"$ref": "#/definitions/conditions"
+								},
+								"type": {
+									"description": "The type of the entry. Can be 'item' for item entries, 'loot_table' to produce items from another loot table, or 'empty' for an entry that generates nothing.",
+									"enum": [
+										"item",
+										"loot_table",
+										"empty"
+									]
+								},
+								"weight": {
+									"type": "integer",
+									"description": "Determines how often this entry will be chosen out of all the entries in the pool. Entries with higher weights will be used more often.",
+									"default": 1
+								},
+								"quality": {
+									"type": "integer",
+									"description": "Modifies the entry's weight based on the killing/opening/fishing player's luck attribute. Formula is `floor(weight + (quality * generic.luck))`.",
+									"default": 0
+								}
+							},
+							"required": [ "type" ],
+							"anyOf": [
+								{
+									"properties": {
+										"type": { "const": "item" },
+										"name": {
+											"$ref": "item_id.json"
+										},
+										"functions": {
+											"type": "array",
+											"description": "Applies functions to the item stack being produced. Functions are applied in order, so for example 'looting_enchant' must be after 'set_count' to work correctly.",
+											"items": {
+												"type": "object",
+												"properties": {
+													"function": {
+														"enum": [
+															"enchant_randomly",
+															"enchant_with_levels",
+															"furnace_smelt",
+															"looting_enchant",
+															"set_attributes",
+															"set_count",
+															"set_damage",
+															"set_data",
+															"set_nbt"
+														]
+													},
+													"conditions": {
+														"$ref": "#/definitions/conditions"
+													}
+												},
+												"required": [ "function" ],
+												"anyOf": [
+													{
+														"properties": {
+															"function": {
+																"const": "enchant_randomly",
+																"title": "Enchant randomly",
+																"description": "Enchants the item with one randomly-selected enchantment. The level of the enchantment, if applicable, will be random."
+															},
+															"enchantments": {
+																"type": "array",
+																"description": "List of enchantment names to choose from. If omitted, all enchantments applicable to the item will be possible."
+															}
+														}
+													},
+													{
+														"properties": {
+															"function": {
+																"const": "enchant_with_levels" ,
+																"title": "Enchant with levels",
+																"description": "Enchants the item with the specified enchantment level (roughly equivalent to using an enchantment table at that level)."
+															},
+															"levels": {
+																"allOf": [
+																	{ "$ref": "#/definitions/integerOrRange" },
+																	{ "description": "The enchantment level to use. Specify a range to use a random level." }
+																]
+															},
+															"treasure": {
+																"type": "boolean",
+																"description": "Determines whether treasure enchantments are allowed on this item.",
+																"default": false
+															}
+														},
+														"required": [ "levels" ]
+													},
+													{
+														"properties": {
+															"function": {
+																"const": "furnace_smelt",
+																"title": "Furnace smelt",
+																"description": "Smelts the item as it would be in a furnace. Used in combination with the 'entity_properties' condition to cook food from animals on death."
+															}
+														}
+													},
+													{
+														"properties": {
+															"function": {
+																"const": "looting_enchant",
+																"title": "Looting enchant",
+																"description": "Adjusts the stack size based on the level of the Looting enchantment on the 'killer' entity."
+															},
+															"count": {
+																"allOf": [
+																	{ "ref": "#/definitions/integerOrRange" },
+																	{ "description": "The number of items to add per level of Looting. Specify a range to use a random number." }
+																]
+															},
+															"limit": {
+																"type": "integer",
+																"description": "The maximum amount of items in the stack after the Looting calculation. If the value is 0, no limit is applied.",
+																"default": 0
+															}
+														},
+														"required": [ "count" ]
+													},
+													{
+														"properties": {
+															"function": {
+																"const": "set_attributes",
+																"title": "Set attributes",
+																"description": "Adds attribute modifiers to the item. See https://minecraft.gamepedia.com/Attribute for more information."
+															},
+															"modifiers": {
+																"type": "array",
+																"description": "A list of attribute modifiers to be added to the item.",
+																"minItems": 1,
+																"items": {
+																	"type": "object",
+																	"properties": {
+																		"name": {
+																			"type": "string",
+																			"description": "The name of the modifier."
+																		},
+																		"attribute": { "$ref": "attribute_name.json" },
+																		"operation": {
+																			"description": "The type of operation to perform.",
+																			"enum": [
+																				"addition",
+																				"multiply_base",
+																				"multiply_total"
+																			]
+																		},
+																		"amount": {
+																			"allOf": [
+																				{ "$ref": "#/definitions/numberOrRange" },
+																				{ "description": "The amount to add or multiply. Specify a range to use a random amount."}
+																			]
+																		},
+																		"id": {
+																			"type": "string",
+																			"description": "UUID of the modifier. If none specified, a new UUID will be generated.",
+																			"pattern": "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$"
+																		},
+																		"slot": {
+																			"type": [ "string", "array" ],
+																			"description": "The slot the item must be in for the modifier to take effect. Specify an array to use a random slot.",
+																			"anyOf": [
+																				{ "$ref": "#/definitions/slot" },
+																				{
+																					"type": "array",
+																					"minItems": 1,
+																					"items": { "$ref": "#/definitions/slot" }
+																				}
+																			]
+																		}
+																	},
+																	"required": [ "name", "attribute", "operation", "amount", "slot" ]
+																}
+															}
+														},
+														"required": [ "modifiers" ]
+													},
+													{
+														"properties": {
+															"function": {
+																"const": "set_count" ,
+																"title": "Set count",
+																"description": "Sets the number of items."
+															},
+															"count": {
+																"allOf": [
+																	{ "ref": "#/definitions/integerOrRange" },
+																	{ "description": "The count to set. Specify a range to use a random count." }
+																]
+															}
+														},
+														"required": [ "count" ]
+													},
+													{
+														"properties": {
+															"function": {
+																"const": "set_damage" ,
+																"title": "Set damage",
+																"description": "Sets the item's durability, for tools."
+															},
+															"damage": {
+																"title": "Durability range",
+																"description": "The durability fraction to apply. Specify a range to use a random amount. 1.0 is undamaged, 0.0 is zero durability left.",
+																"oneOf": [
+																	{ "type": "number", "minimum": 0, "maximum": 1 },
+																	{
+																		"type": "object",
+																		"properties": {
+																			"min": { "type": "number", "minimum": 0, "maximum": 1 },
+																			"max": { "type": "number", "minimum": 0, "maximum": 1 }
+																		},
+																		"required": [ "min", "max" ]
+																	}
+																]
+															}
+														},
+														"required": [ "damage" ]
+													},
+													{
+														"properties": {
+															"function": {
+																"const": "set_data" ,
+																"title": "Set data",
+																"description": "Sets the item data value of the item."
+															},
+															"data": {
+																"$ref": "#/definitions/integerOrRange"
+															}
+														},
+														"required": [ "data" ]
+													},
+													{
+														"properties": {
+															"function": {
+																"const": "set_nbt" ,
+																"title": "Set NBT",
+																"description": "Adds NBT data to an item."
+															},
+															"tag": {
+																"type": "string",
+																"description": "The tag string to add, similar to those used by commands. Note that the first bracket is required and quotation marks need to be escaped using a backslash (\\)."
+															}
+														},
+														"required": [ "tag" ]
+													}
+												]
+											}
+										}
+									},
+									"required": [ "name" ]
+								},
+								{
+									"properties": {
+										"type": { "const": "loot_table" },
+										"name": {
+											"allOf": [
+												{ "$ref": "loot_table_id.json" },
+												{ "description": "The loot table to be used, e.g. 'minecraft:gameplay/fishing/junk'." }
+											]
+										}
+									},
+									"required": [ "name" ]
+								},
+								{
+									"properties": {
+										"type": { "const": "empty" }
+									}
+								}
+							]
+						}
+					}
+				},
+				"required": [ "rolls", "entries" ]
+			}
+		}
+	}
+}

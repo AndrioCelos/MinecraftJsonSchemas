@@ -1,0 +1,64 @@
+{
+	"$schema": "http://json-schema.org/draft-06/schema",
+	"title": "Sound definitions",
+	"description": "Sound definitions for Minecraft 1.12.2. See https://minecraft.gamepedia.com/Sounds.json for more information.",
+	"type": "object",
+	"additionalProperties": {
+		"properties": {
+			"category": false,
+			"replace": {
+				"type": "boolean",
+				"description": "Used only in resource packs. True if the sounds listed in sounds should replace the sounds listed in the default sounds.json for this sound event. False if the sounds listed should be added to the list of default sounds. If undefined, defaults to 'false'.",
+				"default": false
+			},
+			"subtitle": {
+				"type": "string",
+				"description": "Will be translated as the subtitle of the sound if Show Subtitles is enabled ingame."
+			},
+			"sounds": {
+				"type": "array",
+				"description": "The sound files this sound event uses. One of the listed sounds is randomly selected to play when this sound event is triggered.",
+				"items": {
+					"type": [ "string", "object" ],
+					"pattern": "^[^\\\\]*$",
+					"properties": {
+						"name": {
+							"type": "string",
+							"description": "The path to this sound file from the 'sounds' folder. Uses forward slashes instead of backslashes. May also be the name of another sound event.",
+							"pattern": "^[^\\\\]*$"
+						},
+						"volume": {
+							"type": "number",
+							"description": "The volume this sound will be played at. Value is a decimal between 0.0 and 1.0. If undefined, defaults to 1.0.",
+							"exclusiveMinimum": 0,
+							"default": 1
+						},
+						"pitch": {
+							"type": "number",
+							"description": "Plays the pitch at the specified value. If undefined, defaults to 1.0, but higher and lower values can be chosen.",
+							"exclusiveMinimum": 0,
+							"default": 1
+						},
+						"weight": {
+							"type": "integer",
+							"description": "The chance that this sound will be selected to play when this sound event is triggered. Defaults to 1. An example: putting 2 in for the value would be like placing in the name twice. Only accepts integers.",
+							"minimum": 1,
+							"default": 1
+						},
+						"stream": {
+							"type": "boolean",
+							"description": "True if this sound should be streamed from its file. It is recommended that this is set to 'true' for sounds that have a duration longer than a few seconds to avoid lag. Used for all sounds in the 'music' and 'record' categories (except Note Block sounds), as (almost) all the sounds that belong to those categories are over a minute long. If undefined, defaults to 'false'. Setting this to false allows many more instances of the sound to be ran at the same time while setting it to true only allows 4 instances (of that type) to be ran at the same time.",
+							"default": false
+						},
+						"type": {
+							"description": "Two values are available: 'sound' and 'event'; 'sound' plays from the name of the file, while 'event' plays from an already defined event. If undefined, defaults to 'sound'.",
+							"enum": [ "sound", "event" ],
+							"default": "sound"
+						}
+					},
+					"required": [ "name" ]
+				}
+			}
+		}
+	}
+}

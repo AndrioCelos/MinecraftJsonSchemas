@@ -1,0 +1,167 @@
+{
+	"$schema": "http://json-schema.org/draft-06/schema",
+	"title": "Model",
+	"description": "A model for Minecraft 1.12.2. See https://minecraft.gamepedia.com/Model for more information.",
+	"type": "object",
+	"definitions": {
+		"display": {
+			"type": "object",
+			"description": "Specifies the rotation, translation and scale for the model in the specified situation. 'fixed' refers to item frames, while the rest are as their name states. Note that translations are applied to the model before rotations.",
+			"properties": {
+				"rotation": {
+					"type": "array",
+					"minItems": 3,
+					"maxItems": 3,
+					"items": { "type": "number" }
+				},
+				"translation": {
+					"type": "array",
+					"minItems": 3,
+					"maxItems": 3,
+					"items": { "type": "number", "minimum": -80, "maximum": 80 }
+				},
+				"scale": {
+					"type": "array",
+					"minItems": 3,
+					"maxItems": 3,
+					"items": { "type": "number", "minimum": -4, "maximum": 4 }
+				}
+			}
+		},
+		"face": {
+			"title": "Face",
+			"type": "object",
+			"properties": {
+				"uv": {
+					"type": "array",
+					"description": "Defines the area of the texture to use according to the scheme [x1, y1, x2, y2]. If unset, it defaults to values equal to xyz position of the element. The texture behavior will be inconsistent if UV extends below 0 or above 16. If the numbers of x1 and x2 are swapped (e.g. from (0, 0, 16, 16) to (16, 0, 0, 16)), the texture will be flipped.",
+					"minItems": 4,
+					"maxItems": 4,
+					"items": { "type": "number", "minimum": 0, "maximum": 16 }
+				},
+				"texture": {
+					"type": "string",
+					"description": "Specifies the texture in form of the texture variable prepended with a '#'.",
+					"pattern": "^#"
+				},
+				"cullface": {
+					"description": "Specifies whether a face does not need to be rendered when there is a block touching it in the specified position. The position can be: 'down', 'up', 'north', 'south', 'west', or 'east'. It will also determine which side of the block to use the light level from for lighting the face, and if unset, defaults to the side.",
+					"enum": [ "down", "up", "north", "south", "west", "east" ]
+				},
+				"rotation": {
+					"description": "Rotates the texture by the specified number of degrees. Can be 0, 90, 180, or 270. Defaults to 0. Rotation does not affect which part of the texture is used. Instead, it amounts to permutation of the selected texture vertexes (selected implicitly, or explicitly though 'uv').",
+					"enum": [ 0, 90, 180, 270 ],
+					"default": 0
+				},
+				"tintindex": {
+					"type": "integer",
+					"description": "Determines whether to tint the texture using a hardcoded tint index. The default is not using the tint, and any number causes it to use tint. Note that only certain blocks have a tint index; all others will be unaffected."
+				}
+			}
+		}
+	},
+	"properties": {
+		"parent": {
+			"type": "string",
+			"description": "Loads a different model from the given path, starting in 'assets/minecraft/models'. If both 'parent' and 'elements' are set, the 'elements' tag overrides the 'elements' tag from the previous model. Can be set to 'builtin/generated' to use a model that is created out of the specified icon. Note that only the first layer is supported, and rotation can only be achieved using block state files."
+		},
+		"display": {
+			"type": "object",
+			"properties": {
+				"thirdperson_righthand": { "$ref": "#definitions/display" },
+				"thirdperson_lefthand": { "$ref": "#definitions/display" },
+				"firstperson_righthand": { "$ref": "#definitions/display" },
+				"firstperson_lefthand": { "$ref": "#definitions/display" },
+				"gui": { "$ref": "#definitions/display" },
+				"head": { "$ref": "#definitions/display" },
+				"ground": { "$ref": "#definitions/display" },
+				"fixed": { "$ref": "#definitions/display" }
+			}
+		},
+		"textures": {
+			"type": "object",
+			"description": "Holds the textures of the model. Each texture starts in 'assets/minecraft/textures' or can be another texture variable.",
+			"properties": {
+				"particle": {
+					"type": "string",
+					"description": "What texture to load particles from. This texture is used if you are in a nether portal. Note: All breaking particles from non-model blocks are hard-coded."
+				}
+			},
+			"additionalProperties": {
+				"title": "Texture variable",
+				"type": "string",
+				"description": "Defines a texture variable and assigns a texture."
+			}
+		},
+		"elements": {
+			"type": "array",
+			"description": "Contains the elements of the model. They can only have cuboid forms. If both 'parent' and 'elements' are set, the 'elements' tag overrides the 'elements' tag from the previous model.",
+			"items": {
+				"title": "Element",
+				"type": "object",
+				"properties": {
+					"from": {
+						"type": "array",
+						"description": "Start point of a cube according to the scheme [x, y, z]. Values must be between -16 and 32.",
+						"minItems": 3,
+						"maxItems": 3,
+						"items": { "type": "number", "minimum": -16, "maximum": 32 }
+					},
+					"to": {
+						"type": "array",
+						"description": "Stop point of a cube according to the scheme [x, y, z]. Values must be between -16 and 32.",
+						"minItems": 3,
+						"maxItems": 3,
+						"items": { "type": "number", "minimum": -16, "maximum": 32 }
+					},
+					"rotation": {
+						"type": "object",
+						"description": "Defines the rotation of an element.",
+						"properties": {
+							"origin": {
+								"type": "array",
+								"description": "Sets the center of the rotation according to the scheme [x, y, z], defaults to [8, 8, 8].",
+								"minItems": 3,
+								"maxItems": 3,
+								"items": { "type": "number", "default": 8 }
+							},
+							"axis": {
+								"description": "Specifies the direction of rotation.",
+								"enum": [ "x", "y", "z" ]
+							},
+							"angle": {
+								"description": "Specifies the angle of rotation.",
+								"enum": [ -45, -22.5, 0, 22.5, 45 ],
+								"default": 0
+							},
+							"rescale": {
+								"type": "boolean",
+								"description": "Specifies whether or not to scale the faces across the whole block. Can be true or false. Defaults to false.",
+								"default": false
+							}
+						},
+						"required": [ "origin", "axis", "angle" ]
+					},
+					"shade": {
+						"type": "boolean",
+						"description": "Defines whether shadows are rendered.",
+						"default": true
+					},
+					"faces": {
+						"type": "object",
+						"description": "Holds all the faces of the cube. If a face is left out, it will not be rendered.",
+						"properties": {
+							"down": { "$ref": "#definitions/face" },
+							"up": { "$ref": "#definitions/face" },
+							"north": { "$ref": "#definitions/face" },
+							"south": { "$ref": "#definitions/face" },
+							"east": { "$ref": "#definitions/face" },
+							"west": { "$ref": "#definitions/face" }
+						}
+					}
+				},
+				"required": [ "from", "to", "faces" ]
+			}
+		}
+	}
+}

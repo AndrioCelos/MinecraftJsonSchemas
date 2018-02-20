@@ -1,0 +1,1020 @@
+{
+	"$schema": "http://json-schema.org/draft-06/schema",
+	"title": "Advancement",
+	"description": "An advancement for Minecraft 1.12.2. See https://minecraft.gamepedia.com/Advancement for more information.",
+	"type": "object",
+	"definitions": {
+		"entity": {
+			"type": "object",
+			"title": "Entity"
+		},
+		"item": {
+			"type": "object",
+			"title": "Item"
+		},
+		"integerRange": {
+			"type": "object",
+			"properties": {
+				"min": { "type": "integer" },
+				"max": { "type": "integer" }
+			}
+		},
+		"integerOrRange": {
+			"type": [ "integer", "object" ],
+			"title": "Integer or range object",
+			"properties": {
+				"min": { "type": "integer" },
+				"max": { "type": "integer" }
+			}
+		},
+		"numberRange": {
+			"type": "object",
+			"properties": {
+				"min": { "type": "number" },
+				"max": { "type": "number" }
+			}
+		},
+		"numberOrRange": {
+			"type": [ "number", "object" ],
+			"title": "Number or range object",
+			"properties": {
+				"min": { "type": "number" },
+				"max": { "type": "number" }
+			}
+		},
+		"effect": {
+			"properties": {
+				"amplifier": {
+					"allOf": [
+						{ "$ref": "#definitions/integerOrRange" },
+						{ "description": "The effect amplifier." }
+					]
+				},
+				"duration": {
+					"allOf": [
+						{ "$ref": "#definitions/integerOrRange" },
+						{ "description": "The duration of the effect in ticks." }
+					]
+				}
+			}
+		},
+		"damageType": {
+			"type": "object",
+			"title": "Damage type",
+			"properties": {
+				"bypasses_armor": {
+					"type": "boolean",
+					"description": "Checks if the damage bypassed the armor of the player."
+				},
+				"bypasses_invulnerability": {
+					"type": "boolean",
+					"description": "Checks if the damage bypassed the invulnerability status of the player."
+				},
+				"bypasses_magic": {
+					"type": "boolean",
+					"description": "Checks if the damage was caused by starvation."
+				},
+				"direct_entity": {
+					"allOf": [
+						{ "$ref": "#definitions/entity" },
+						{ "description": "The entity that was the direct cause of the damage." }
+					]
+				},
+				"is_explosion": {
+					"type": "boolean",
+					"description": "Checks if the damage originated from an explosion."
+				},
+				"is_fire": {
+					"type": "boolean",
+					"description": "Checks if the damage originated from fire."
+				},
+				"is_magic": {
+					"type": "boolean",
+					"description": "Checks if the damage originated from magic."
+				},
+				"is_projectile": {
+					"type": "boolean",
+					"description": "Checks if the damage originated from a projectile."
+				},
+				"source_entity": {
+					"allOf": [
+						{ "$ref": "#definitions/entity" },
+						{ "description": "Checks the entity that was the source of the damage (for example: the skeleton that shot the arrow)." }
+					]
+				}
+			}
+		},
+		"location": {
+			"title": "Location",
+			"properties": {
+				"biome": {
+					"description": "The biome the entity is currently in.",
+					"enum": [
+						"beaches",
+						"birch_forest",
+						"birch_forest_hills",
+						"cold_beach",
+						"deep_ocean",
+						"desert",
+						"desert_hills",
+						"extreme_hills",
+						"extreme_hills_with_trees",
+						"forest",
+						"forest_hills",
+						"frozen_ocean",
+						"frozen_river",
+						"hell",
+						"ice_flats",
+						"ice_mountains",
+						"jungle",
+						"jungle_edge",
+						"jungle_hills",
+						"mesa",
+						"mesa_clear_rock",
+						"mesa_rock",
+						"mushroom_island",
+						"mushroom_island_shore",
+						"mutated_birch_forest",
+						"mutated_birch_forest_hills",
+						"mutated_desert",
+						"mutated_extreme_hills",
+						"mutated_extreme_hills_with_trees",
+						"mutated_forest",
+						"mutated_ice_flats",
+						"mutated_jungle",
+						"mutated_jungle_edge",
+						"mutated_mesa",
+						"mutated_mesa_clear_rock",
+						"mutated_mesa_rock",
+						"mutated_plains",
+						"mutated_redwood_taiga",
+						"mutated_redwood_taiga_hills",
+						"mutated_roofed_forest",
+						"mutated_savanna",
+						"mutated_savanna_rock",
+						"mutated_swampland",
+						"mutated_taiga",
+						"mutated_taiga_cold",
+						"ocean",
+						"plains",
+						"redwood_taiga",
+						"redwood_taiga_hills",
+						"river",
+						"roofed_forest",
+						"savanna",
+						"savanna_rock",
+						"sky",
+						"smaller_extreme_hills",
+						"stone_beach",
+						"swampland",
+						"taiga",
+						"taiga_cold",
+						"taiga_cold_hills",
+						"taiga_hills",
+						"void"
+					]
+				},
+				"dimension": {
+					"description": "The dimension the entity is currently in.",
+					"enum": [
+						"overworld",
+						"the_nether",
+						"the_end"
+					]
+				},
+				"feature": {
+					"description": "The name of a structure.",
+					"enum": [
+						"EndCity",
+						"Fortress",
+						"Mansion",
+						"Mineshaft",
+						"Monument",
+						"Stronghold",
+						"Temple",
+						"Village"
+					]
+				},
+				"x": { "$ref": "#definitions/numberOrRange" },
+				"y": { "$ref": "#definitions/numberOrRange" },
+				"z": { "$ref": "#definitions/numberOrRange" }
+			}
+		}
+	},
+	"properties": {
+		"display": {
+			"type": "object",
+			"properties": {
+				"icon": {
+					"type": "object",
+					"properties": {
+						"item": {
+							"$ref": "item_id.json"
+						},
+						"data": {
+							"type": "integer",
+							"description": "The data value of the item to display."
+						}
+					},
+					"required": [ "item" ]
+				},
+				"title": {
+					"allOf": [
+						{ "$ref": "text_component.json" },
+						{ "description": "The title of the advancement." }
+					]
+				},
+				"frame": {
+					"description": "The type of advancement.",
+					"enum": [ "task", "goal", "challenge" ],
+					"default": "task"
+				},
+				"background": {
+					"type": "string",
+					"description": "For root advancements, the directory for the background to use in this advancement tab."
+				},
+				"description": {
+					"allOf": [
+						{ "$ref": "text_component.json" },
+						{ "description": "The description of the advancement." }
+					]
+				},
+				"show_toast": {
+					"type": "boolean",
+					"description": "Specifies whether to show the toast pop-up after completing this advancement.",
+					"default": true
+				},
+				"announce_to_chat": {
+					"type": "boolean",
+					"description": "Specifies whether to announce in the chat when this advancement has been completed.",
+					"default": true
+				},
+				"hidden": {
+					"type": "boolean",
+					"description": "Specifies whether to hide this advancement and all its children from the advancement screen until this advancement is completed. Has no effect on root advancements themselves, but will still affect their children.",
+					"default": false
+				}
+			},
+			"required": [ "title", "description", "icon" ]
+		},
+		"parent": {
+			"type": "string",
+			"description": "For non-root advancements, the parent advancement of this advancement."
+		},
+		"criteria": {
+			"type": "object",
+			"description": "The criteria that have to be met to complete this advancement.",
+			"minProperties": 1,
+			"additionalProperties": {
+				"type": "object",
+				"description": "A criterion. The keys must be unique.",
+				"properties": {
+					"trigger": {
+						"enum": [
+							"minecraft:bred_animals",
+							"minecraft:brewed_potion",
+							"minecraft:changed_dimension",
+							"minecraft:construct_beacon",
+							"minecraft:consume_item",
+							"minecraft:cured_zombie_villager",
+							"minecraft:effects_changed",
+							"minecraft:enchanted_item",
+							"minecraft:enter_block",
+							"minecraft:entity_hurt_player",
+							"minecraft:entity_killed_player",
+							"minecraft:impossible",
+							"minecraft:inventory_changed",
+							"minecraft:item_durability_changed",
+							"minecraft:levitation",
+							"minecraft:location",
+							"minecraft:nether_travel",
+							"minecraft:placed_block",
+							"minecraft:player_hurt_entity",
+							"minecraft:player_killed_entity",
+							"minecraft:recipe_unlocked",
+							"minecraft:slept_in_bed",
+							"minecraft:summoned_entity",
+							"minecraft:tame_animal",
+							"minecraft:tick",
+							"minecraft:used_ender_eye",
+							"minecraft:used_totem",
+							"minecraft:villager_trade"
+						]
+					},
+					"conditions": {
+						"type": "object",
+						"description": "Conditions that need to be met when the trigger gets activated."
+					}
+				},
+				"required": [ "trigger" ],
+				"anyOf": [
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:bred_animals",
+								"title": "Bred animals",
+								"description": "Triggers after the player breeds two animals."
+							},
+							"conditions": {
+								"properties": {
+									"child": {
+										"allOf": [
+											{ "$ref": "#definitions/entity" },
+											{ "description": "The child that results from the breeding." }
+										]
+									},
+									"parent": {
+										"allOf": [
+											{ "$ref": "#definitions/entity" },
+											{ "description": "The parent." }
+										]
+									},
+									"partner": {
+										"allOf": [
+											{ "$ref": "#definitions/entity" },
+											{ "description": "The partner (the entity the parent was bred with, useful for checking horses + donkey = mule breeding)" }
+										]
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:brewed_potion",
+								"title": "Brewed potion",
+								"description": "Triggers after the player takes any item out of a brewing stand."
+							},
+							"conditions": {
+								"properties": {
+									"potion": {
+										"type": "string",
+										"description": "The ID of the brewed potion."
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:changed_dimension",
+								"title": "Changed dimension",
+								"description": "Triggers after the player travels between two dimensions."
+							},
+							"conditions": {
+								"properties": {
+									"from": {
+										"description": "The dimension the entity traveled from.",
+										"enum": [ "overworld", "the_nether", "the_end" ]
+									},
+									"to": {
+										"description": "The dimension the entity traveled to.",
+										"enum": [ "overworld", "the_nether", "the_end" ]
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:construct_beacon",
+								"title": "Construct beacon",
+								"description": "Triggers after the player changes the structure of a beacon, when the beacon updates itself."
+							},
+							"conditions": {
+								"properties": {
+									"level": {
+										"allOf": [
+											{ "$ref": "#definitions/integerOrRange" },
+											{ "description": "The tier of the updated beacon structure." }
+										]
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:consume_item",
+								"title": "Consume item",
+								"description": "Triggers when the player consumes an item."
+							},
+							"conditions": {
+								"properties": {
+									"item": {
+										"allOf": [
+											{ "$ref": "#definitions/item" },
+											{ "description": "The item that was consumed." }
+										]
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:cured_zombie_villager",
+								"title": "Cured zombie villager",
+								"description": "Triggers when the player cures a zombie villager."
+							},
+							"conditions": {
+								"properties": {
+									"villager": {
+										"allOf": [
+											{ "$ref": "#definitions/entity" },
+											{ "description": "The villager that is the result of the conversion." }
+										]
+									},
+									"zombie": {
+										"allOf": [
+											{ "$ref": "#definitions/entity" },
+											{ "description": "The zombie villager right before the conversion is complete." }
+										]
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:effects_changed",
+								"title": "Effects changed",
+								"description": "Triggers after the player gets a status effect applied or taken from them."
+							},
+							"conditions": {
+								"properties": {
+									"effects": {
+										"type": "object",
+										"description": "A list of effects that the player must have.",
+										"properties": {
+											"minecraft:absorption": { "$ref": "#definitions/effect" },
+											"minecraft:blindness": { "$ref": "#definitions/effect" },
+											"minecraft:fire_resistance": { "$ref": "#definitions/effect" },
+											"minecraft:glowing": { "$ref": "#definitions/effect" },
+											"minecraft:haste": { "$ref": "#definitions/effect" },
+											"minecraft:health_boost": { "$ref": "#definitions/effect" },
+											"minecraft:hunger": { "$ref": "#definitions/effect" },
+											"minecraft:instant_damage": { "$ref": "#definitions/effect" },
+											"minecraft:instant_health": { "$ref": "#definitions/effect" },
+											"minecraft:invisibility": { "$ref": "#definitions/effect" },
+											"minecraft:jump_boost": { "$ref": "#definitions/effect" },
+											"minecraft:levitation": { "$ref": "#definitions/effect" },
+											"minecraft:luck": { "$ref": "#definitions/effect" },
+											"minecraft:mining_fatigue": { "$ref": "#definitions/effect" },
+											"minecraft:nausea": { "$ref": "#definitions/effect" },
+											"minecraft:night_vision": { "$ref": "#definitions/effect" },
+											"minecraft:poison": { "$ref": "#definitions/effect" },
+											"minecraft:regeneration": { "$ref": "#definitions/effect" },
+											"minecraft:resistance": { "$ref": "#definitions/effect" },
+											"minecraft:saturation": { "$ref": "#definitions/effect" },
+											"minecraft:slowness": { "$ref": "#definitions/effect" },
+											"minecraft:speed": { "$ref": "#definitions/effect" },
+											"minecraft:strength": { "$ref": "#definitions/effect" },
+											"minecraft:unluck": { "$ref": "#definitions/effect" },
+											"minecraft:water_breathing": { "$ref": "#definitions/effect" },
+											"minecraft:weakness": { "$ref": "#definitions/effect" },
+											"minecraft:wither": { "$ref": "#definitions/effect" }
+										},
+										"additionalProperties": { "$ref": "#definitions/effect" }
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:enchanted_item",
+								"title": "Enchanted item",
+								"description": "Triggers after the player enchants an item through an enchanting table (does not get triggered through an anvil, or through commands)."
+							},
+							"conditions": {
+								"properties": {
+									"item": {
+										"allOf": [
+											{ "$ref": "#definitions/item" },
+											{ "description": "The item after it has been enchanted." }
+										]
+									},
+									"levels": {
+										"allOf": [
+											{ "$ref": "#definitions/integerOrRange" },
+											{ "description": "The number of levels spent by the player on the enchantment." }
+										]
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:enter_block",
+								"title": "Enter block",
+								"description": "Triggers when the player stands in a block. Checks every tick and will try to trigger for each successful match (up to 8 times, the maximum amount of blocks a player can stand in), which only works if the advancement is revoked from within the advancement using a function reward."
+							},
+							"conditions": {
+								"properties": {
+									"block": { "$ref": "block_id.json" },
+									"state": {
+										"type": "object",
+										"description": "The block state properties that the block must match."
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:entity_hurt_player",
+								"title": "Entity hurt player",
+								"description": "Triggers after a player gets hurt."
+							},
+							"conditions": {
+								"properties": {
+									"damage": {
+										"type": "object",
+										"description": "Checks the damage done to the player.",
+										"properties": {
+											"blocked": {
+												"type": "boolean",
+												"description": "Checks whether the damage was successfully blocked."
+											},
+											"dealt": {
+												"allOf": [
+													{ "$ref": "#definitions/numberOrRange" },
+													{ "description": "Checks the amount of incoming damage before damage reduction." }
+												]
+											},
+											"direct_entity": {
+												"allOf": [
+													{ "$ref": "#definitions/entity" },
+													{ "description": "The entity that was the direct cause of the damage." }
+												]
+											},
+											"source_entity": {
+												"allOf": [
+													{ "$ref": "#definitions/entity" },
+													{ "description": "Checks the entity that was the source of the damage (for example: the skeleton that shot the arrow)." }
+												]
+											},
+											"taken": {
+												"allOf": [
+													{ "$ref": "#definitions/numberOrRange" },
+													{ "description": "Checks the amount of incoming damage after damage reduction." }
+												]
+											},
+											"type": {
+												"allOf": [
+													{ "$ref": "#definitions/damageType" },
+													{ "description": "Checks the type of damage done." }
+												]
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:entity_killed_player",
+								"title": "Entity killed player",
+								"description": "Triggers after an entity kills a player."
+							},
+							"conditions": {
+								"properties": {
+									"entity": {
+										"allOf": [
+											{ "$ref": "#definitions/entity" },
+											{ "description": "Checks the entity that was the source of the damage that killed the player (for example: the skeleton that shot the arrow)." }
+										]
+									},
+									"killing_blow": {
+										"allOf": [
+											{ "$ref": "#definitions/damageType" },
+											{ "description": "Checks the type of damage that killed the player." }
+										]
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:impossible",
+								"title": "Impossible",
+								"description": "Triggers only using commands."
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:inventory_changed",
+								"title": "Inventory changed",
+								"description": "Triggers after any changes happen to the player's inventory."
+							},
+							"conditions": {
+								"properties": {
+									"items": {
+										"type": "array",
+										"description": "A list of items that must be in the player's inventory.",
+										"items": {
+											"allOf": [
+												{ "$ref": "#definitions/item" }
+											]
+										}
+									},
+									"empty": {
+										"allOf": [
+											{ "$ref": "#definitions/integerOrRange" },
+											{ "description": "The number of slots empty in the inventory." }
+										]
+									},
+									"full": {
+										"allOf": [
+											{ "$ref": "#definitions/integerOrRange" },
+											{ "description": "The number of slots completely filled (stacksize) in the inventory." }
+										]
+									},
+									"occupied": {
+										"allOf": [
+											{ "$ref": "#definitions/integerOrRange" },
+											{ "description": "The number of slots occupied in the inventory." }
+										]
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:item_durability_changed",
+								"title": "Item durability changed",
+								"description": "Triggers after any item in the inventory has been damaged in any form."
+							},
+							"conditions": {
+								"properties": {
+									"delta": {
+										"allOf": [
+											{ "$ref": "#definitions/integerOrRange" },
+											{ "description": "The difference in durability." }
+										]
+									},
+									"durability": {
+										"allOf": [
+											{ "$ref": "#definitions/integerOrRange" },
+											{ "description": "The remaining durability of the item. -1 indicates that the item was broken." }
+										]
+									},
+									"item": {
+										"allOf": [
+											{ "$ref": "#definitions/item" },
+											{ "description": "The item before it was damaged. Allows you to check the durability before the item was damaged." }
+										]
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:levitation",
+								"title": "Levitation",
+								"description": "Triggers when the player has the levitation status effect."
+							},
+							"conditions": {
+								"properties": {
+									"distance": {
+										"type": "object",
+										"properties": {
+											"absolute": { "$ref": "#definitions/integerRange" },
+											"horizontal": { "$ref": "#definitions/integerRange" },
+											"x": { "$ref": "#definitions/integerRange" },
+											"y": { "$ref": "#definitions/integerRange" },
+											"z": { "$ref": "#definitions/integerRange" }
+										}
+									},
+									"duration": {
+										"allOf": [
+											{ "$ref": "#definitions/integerOrRange" },
+											{ "description": "The duration of the levitation in ticks." }
+										]
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:location",
+								"title": "Location",
+								"description": "Triggers every 20 ticks (1 second) and checks where the player is."
+							},
+							"conditions": {
+								"$ref": "#definitions/location"
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:nether_travel",
+								"title": "Nether travel",
+								"description": "Triggers when the player travels to the Nether and then returns to the Overworld."
+							},
+							"conditions": {
+								"properties": {
+									"distance": {
+										"type": "object",
+										"properties": {
+											"absolute": { "$ref": "#definitions/numberRange" },
+											"horizontal": { "$ref": "#definitions/numberRange" },
+											"x": { "$ref": "#definitions/numberRange" },
+											"y": { "$ref": "#definitions/numberRange" },
+											"z": { "$ref": "#definitions/numberRange" }
+										}
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:placed_block",
+								"title": "Placed block",
+								"description": "Triggers when the player placed a block."
+							},
+							"conditions": {
+								"properties": {
+									"block": {
+										"$ref": "block_id.json"
+									},
+									"item": {
+										"allOf": [
+											{ "$ref": "#definitions/item" },
+											{ "description": "The item that was used to place the block before the item was consumed." }
+										]
+									},
+									"location": {
+										"$ref": "#definitions/location"
+									},
+									"state": {
+										"type": "object",
+										"description": "The block state properties that the block must match."
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:player_hurt_entity",
+								"title": "Player hurt entity",
+								"description": "Triggers after the player hurts a mob or player."
+							},
+							"conditions": {
+								"properties": {
+									"damage": {
+										"allOf": [
+											{ "$ref": "#definitions/damageType" },
+											{ "description": "Checks the type of damage done." }
+										]
+									},
+									"entity": {
+										"allOf": [
+											{ "$ref": "#definitions/entity" },
+											{ "description": "The entity that was damaged." }
+										]
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:player_killed_entity",
+								"title": "Player killed entity",
+								"description": "Triggers after a player is the source of a mob or player being killed."
+							},
+							"conditions": {
+								"properties": {
+									"entity": {
+										"allOf": [
+											{ "$ref": "#definitions/entity" },
+											{ "description": "The entity that was killed." }
+										]
+									},
+									"killing_blow": {
+										"allOf": [
+											{ "$ref": "#definitions/damageType" },
+											{ "description": "The type of damage that killed an entity." }
+										]
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:recipe_unlocked",
+								"title": "Recipe unlocked",
+								"description": "Triggers after the player unlocks a recipe (using a knowledge book for example)."
+							},
+							"conditions": {
+								"properties": {
+									"recipe": {
+										"type": "string",
+										"description": "The name of the recipe that was unlocked."
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:slept_in_bed",
+								"title": "Slept in bed",
+								"description": "Triggers when the player enters a bed."
+							},
+							"conditions": {
+								"$ref": "#definitions/location"
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:summoned_entity",
+								"title": "Summoned entity",
+								"description": "Triggers after an entity has been summoned. Works with iron golems (pumpkin and iron blocks), snow golems (pumpkin and snow blocks), the ender dragon (ender crystals) and the wither (wither skulls and soul sand). Using dispensers to place the wither skulls or pumpkins will still activate this trigger. Spawn eggs, commands and mob spawners will not work however."
+							},
+							"conditions": {
+								"properties": {
+									"entity": {
+										"allOf": [
+											{ "$ref": "#definitions/entity" },
+											{ "description": "The entity that was summoned." }
+										]
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:tame_animal",
+								"title": "Tame animal",
+								"description": "Triggers after the player tames an animal."
+							},
+							"conditions": {
+								"properties": {
+									"entity": {
+										"allOf": [
+											{ "$ref": "#definitions/entity" },
+											{ "description": "The entity that was tamed." }
+										]
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:tick",
+								"title": "Tick",
+								"description": "Triggers every tick."
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:used_ender_eye",
+								"title": "Used ender eye",
+								"description": "Triggers when the player uses an eye of ender (in a world where strongholds generate)."
+							},
+							"conditions": {
+								"properties": {
+									"distance": {
+										"allOf": [
+											{ "$ref": "#definitions/integerOrRange" },
+											{ "description": "The horizontal distance between the player and the stronghold." }
+										]
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:used_totem",
+								"title": "Used totem",
+								"description": "Triggers when the players uses a totem."
+							},
+							"conditions": {
+								"properties": {
+									"item": {
+										"allOf": [
+											{ "$ref": "#definitions/item" },
+											{ "description": "The totem that was used." }
+										]
+									}
+								}
+							}
+						}
+					},
+					{
+						"properties": {
+							"trigger": {
+								"const": "minecraft:villager_trade",
+								"title": "Villager trade",
+								"description": "Triggers after the player trades with a villager."
+							},
+							"conditions": {
+								"properties": {
+									"item": {
+										"allOf": [
+											{ "$ref": "#definitions/item" },
+											{ "description": "The item that was purchased. The 'count' tag checks the count from one trade, not multiple." }
+										]
+									},
+									"villager": {
+										"allOf": [
+											{ "$ref": "#definitions/entity" },
+											{ "description": "The villager the item was purchased from." }
+										]
+									}
+								}
+							}
+						}
+					}
+				]
+			}
+		},
+		"requirements": {
+			"type": "array",
+			"description": "An optional list of requirements. If all criteria are required, this may be omitted. With multiple criteria, contains a list of lists with criteria. If all of the lists each have any criteria met, it will complete the advancement. (Basically an AND grouping of OR groups.)",
+			"items": {
+				"type": "array",
+				"description": "A requirement. Any one of the criteria in the list must be completed to complete this requirement.",
+				"minItems": 1,
+				"items": {
+					"type": "string",
+					"description": "A criterion name."
+				}
+			}
+		},
+		"rewards": {
+			"type": "object",
+			"description": "The rewards provided when this advancement is obtained.",
+			"properties": {
+				"recipes": {
+					"type": "array",
+					"description": "A list of crafting recipe names.",
+					"items": {
+						"type": "string"
+					}
+				},
+				"loot": {
+					"type": "array",
+					"description": "A list of loot table names.",
+					"items": {
+						"$ref": "loot_table_id.json"
+					}
+				},
+				"experience": {
+					"type": "integer",
+					"description": "An amount of experience."
+				},
+				"function": {
+					"type": "string",
+					"description": "A function to run."
+				}
+			},
+			"default": { }
+		}
+	},
+	"required": [ "criteria" ]
+}

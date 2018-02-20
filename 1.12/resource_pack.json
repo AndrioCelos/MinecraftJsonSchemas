@@ -1,0 +1,48 @@
+{
+	"$schema": "http://json-schema.org/draft-06/schema",
+	"title": "Resource pack",
+	"description": "The metadata file for a Minecraft resource pack.",
+	"type": "object",
+	"properties": {
+		"pack": {
+			"type": "object",
+			"description": "Holds the resource pack information.",
+			"properties": {
+				"pack_format": {
+					"type": "integer",
+					"description": "Pack version. If this number does not match the current required number, the resource pack will display a warning and require additional confirmation to load the pack. Requires 1 for 1.6-1.9, 2 for 1.9 and 1.10, 3 for 1.11 and 1.12, and 4 for 1.13."
+				},
+				"description": {
+					"type": "string",
+					"description": "Text that will be shown below the pack name in the resource pack menu. The text will be shown on two lines. If the text is too long it will be cut off."
+				}
+			},
+			"required": [ "pack_format", "description" ]
+		},
+		"language": {
+			"type": "object",
+			"description": "Contains additional languages to add to the language menu.",
+			"additionalProperties": {
+				"type": "object",
+				"description": "A language. The key represents the language code, corresponding to a .lang file with the same name in the folder 'assets/minecraft/lang'",
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "The full name of the language."
+					},
+					"region": {
+						"type": "string",
+						"description": "The country or region name."
+					},
+					"bidirectional": {
+						"type": "boolean",
+						"description": "If true, the language reads right to left.",
+						"default": false
+					}
+				},
+				"required": [ "name", "region" ]
+			}
+		}
+	},
+	"required": [ "pack" ]
+}

@@ -1,0 +1,19 @@
+{
+	"$schema": "http://json-schema.org/draft-06/schema",
+	"title": "Attribute name",
+	"description": "A Minecraft attribute name.",
+	"enum": [
+		"generic.armor",
+		"generic.armorToughness",
+		"generic.attackDamage",
+		"generic.attackSpeed",
+		"generic.flyingSpeed",
+		"generic.followRange",
+		"generic.knockbackResistance",
+		"generic.luck",
+		"generic.maxHealth",
+		"generic.movementSpeed",
+		"horse.jumpStrength",
+		"zombie.spawnReinforcements"
+	]
+}
